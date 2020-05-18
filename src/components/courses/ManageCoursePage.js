@@ -11,23 +11,29 @@ function ManageCoursePage({
   authors,
   loadCourses,
   loadAuthors,
+  saveCourse,
   ...props
 }) {
   const [course, setCourse] = useState({ ...props.course });
   const [errors, setErrors] = useState({});
-  useEffect(() => {
-    if (courses.length === 0) {
-      loadCourses().catch((error) => {
-        alert(`Loading courses error: ${error}}`);
-      });
-    }
+  useEffect(
+    () => {
+      if (courses.length === 0) {
+        loadCourses().catch((error) => {
+          alert(`Loading courses error: ${error}}`);
+        });
+      } //else {
+      //setCourse({ ...props.course });
+      //}
 
-    if (authors.length === 0) {
-      loadAuthors().catch((error) => {
-        alert(`Loading authors error: ${error}}`);
-      });
-    }
-  }, []);
+      if (authors.length === 0) {
+        loadAuthors().catch((error) => {
+          alert(`Loading authors error: ${error}}`);
+        });
+      }
+    },
+    [] /* [props.course] */
+  );
 
   function handleChange(event) {
     const { name, value } = event.target;
@@ -37,12 +43,18 @@ function ManageCoursePage({
     }));
   }
 
+  function handleSave(event) {
+    event.preventDefault();
+    saveCourse(course);
+  }
+
   return (
     <CourseForm
       course={course}
       errors={errors}
       authors={authors}
       onChange={handleChange}
+      onSave={handleSave}
     />
   );
 }
@@ -53,6 +65,7 @@ ManageCoursePage.propTypes = {
   authors: PropTypes.array.isRequired,
   loadCourses: PropTypes.func.isRequired,
   loadAuthors: PropTypes.func.isRequired,
+  saveCourse: PropTypes.func.isRequired,
 };
 
 function mapStateToProps(state) {
@@ -66,6 +79,7 @@ function mapStateToProps(state) {
 const mapDispatchToProps = {
   loadCourses: courseActions.loadCourses,
   loadAuthors: authorActions.loadAuthors,
+  saveCourse: courseActions.saveCourse,
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(ManageCoursePage);
